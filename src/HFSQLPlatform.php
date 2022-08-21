@@ -3,58 +3,113 @@
 namespace TBCD\Doctrine\HFSQLDriver;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Exception;
 
 class HFSQLPlatform extends AbstractPlatform
 {
 
-    public function getBooleanTypeDeclarationSQL(array $column)
+    /**
+     * @inheritDoc
+     */
+    public function getBooleanTypeDeclarationSQL(array $column): string
     {
-        // TODO: Implement getBooleanTypeDeclarationSQL() method.
+        return 'TINYINT(1)';
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getIntegerTypeDeclarationSQL(array $column): string
     {
         return 'INT';
     }
 
-    public function getBigIntTypeDeclarationSQL(array $column)
+    /**
+     * @inheritDoc
+     */
+    public function getBigIntTypeDeclarationSQL(array $column): string
     {
-        // TODO: Implement getBigIntTypeDeclarationSQL() method.
+        return 'BIGINT';
     }
 
-    public function getSmallIntTypeDeclarationSQL(array $column)
+    /**
+     * @inheritDoc
+     */
+    public function getSmallIntTypeDeclarationSQL(array $column): string
     {
-        // TODO: Implement getSmallIntTypeDeclarationSQL() method.
+        return 'SMALLINT';
     }
 
-    protected function _getCommonIntegerTypeDeclarationSQL(array $column)
+    /**
+     * @inheritDoc
+     */
+    protected function _getCommonIntegerTypeDeclarationSQL(array $column): string
     {
-        // TODO: Implement _getCommonIntegerTypeDeclarationSQL() method.
+        return empty($column['autoincrement']) ? '' : ' AUTO_INCREMENT';
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function initializeDoctrineTypeMappings()
     {
-        // TODO: Implement initializeDoctrineTypeMappings() method.
+        $this->doctrineTypeMapping = [
+            'bigint' => 'bigint',
+            'binary' => 'binary',
+            'blob' => 'blob',
+            'char' => 'string',
+            'date' => 'date',
+            'datetime' => 'datetime',
+            'decimal' => 'decimal',
+            'double' => 'float',
+            'float' => 'float',
+            'int' => 'integer',
+            'integer' => 'integer',
+            'numeric' => 'decimal',
+            'real' => 'float',
+            'set' => 'simple_array',
+            'smallint' => 'smallint',
+            'string' => 'string',
+            'text' => 'text',
+            'time' => 'time',
+            'tinyint' => 'boolean',
+            'varbinary' => 'binary',
+            'varchar' => 'string',
+            'year' => 'date',
+        ];
     }
 
-    public function getClobTypeDeclarationSQL(array $column)
+    /**
+     * @inheritDoc
+     */
+    public function getClobTypeDeclarationSQL(array $column): string
     {
-        // TODO: Implement getClobTypeDeclarationSQL() method.
+        return 'TEXT';
     }
 
-    public function getBlobTypeDeclarationSQL(array $column)
+    /**
+     * @inheritDoc
+     */
+    public function getBlobTypeDeclarationSQL(array $column): string
     {
-        // TODO: Implement getBlobTypeDeclarationSQL() method.
+        return 'CLOB';
     }
 
-    public function getName()
+    /**
+     * @inheritDoc
+     */
+    public function getName(): string
     {
-        // TODO: Implement getName() method.
+        return 'hfsql';
     }
 
+    /**
+     * @inheritDoc
+     *
+     * @throws Exception
+     */
     public function getCurrentDatabaseExpression(): string
     {
-        // TODO: Implement getCurrentDatabaseExpression() method.
-        return '';
+        throw new Exception('HFSQL doesnt have expression to get the current database');
     }
 }
