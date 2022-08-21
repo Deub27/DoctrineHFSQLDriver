@@ -1,13 +1,16 @@
 <?php
 
-namespace TBCD\Doctrine\HfsqlDriver;
+namespace TBCD\Doctrine\HFSQLDriver;
 
 use Doctrine\DBAL\Driver as DriverInterface;
 use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
 class Driver implements DriverInterface
 {
+
+    private ?HFSQLPlatform $platform = null;
 
     /**
      * @inheritDoc
@@ -21,17 +24,22 @@ class Driver implements DriverInterface
     /**
      * @inheritDoc
      */
-    public function getDatabasePlatform()
+    public function getDatabasePlatform(): AbstractPlatform
     {
-        // TODO: Implement getDatabasePlatform() method.
+        if (!$this->platform) {
+            $this->platform = new HFSQLPlatform();
+        }
+        return $this->platform;
     }
 
     /**
      * @inheritDoc
+     *
+     * @throws \Doctrine\DBAL\Exception
      */
-    public function getSchemaManager(\Doctrine\DBAL\Connection $conn, AbstractPlatform $platform)
+    public function getSchemaManager(\Doctrine\DBAL\Connection $conn, AbstractPlatform $platform): AbstractSchemaManager
     {
-        // TODO: Implement getSchemaManager() method.
+        return $platform->createSchemaManager($conn);
     }
 
     /**

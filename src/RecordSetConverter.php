@@ -1,6 +1,6 @@
 <?php
 
-namespace TBCD\Doctrine\HfsqlDriver;
+namespace TBCD\Doctrine\HFSQLDriver;
 
 use Variant;
 

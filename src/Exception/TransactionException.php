@@ -1,10 +1,10 @@
 <?php
 
-namespace TBCD\Doctrine\HfsqlDriver\Exception;
+namespace TBCD\Doctrine\HFSQLDriver\Exception;
 
-use Doctrine\DBAL\Driver\Exception as ExceptionInterface;
 use Exception;
-use TBCD\Doctrine\HfsqlDriver\Driver;
+use Doctrine\DBAL\Driver\Exception as ExceptionInterface;
+use TBCD\Doctrine\HFSQLDriver\Driver;
 
 class TransactionException extends Exception implements ExceptionInterface
 {

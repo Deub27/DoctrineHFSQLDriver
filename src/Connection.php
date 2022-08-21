@@ -1,6 +1,6 @@
 <?php
 
-namespace TBCD\Doctrine\HfsqlDriver;
+namespace TBCD\Doctrine\HFSQLDriver;
 
 use Com;
 use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
@@ -8,7 +8,7 @@ use Doctrine\DBAL\Driver\Result as ResultInterface;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\ParameterType;
 use Symfony\Polyfill\Intl\Icu\Exception\MethodNotImplementedException;
-use TBCD\Doctrine\HfsqlDriver\Exception\TransactionException;
+use TBCD\Doctrine\HFSQLDriver\Exception\TransactionException;
 
 class Connection implements ConnectionInterface
 {
