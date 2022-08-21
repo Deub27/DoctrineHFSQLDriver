@@ -1,6 +1,6 @@
 <?php
 
-namespace TBCD\Doctrine\HFSQLDriver;
+namespace TBCD\Doctrine\HFSQLDriver\Platform;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Exception;

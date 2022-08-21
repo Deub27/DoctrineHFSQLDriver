@@ -3,14 +3,17 @@
 namespace TBCD\Doctrine\HFSQLDriver;
 
 use Doctrine\DBAL\Driver as DriverInterface;
-use Doctrine\DBAL\Driver\API\ExceptionConverter;
+use Doctrine\DBAL\Driver\API\ExceptionConverter as ExceptionConverterInterface;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use TBCD\Doctrine\HFSQLDriver\Platform\HFSQLPlatform;
 
 class Driver implements DriverInterface
 {
 
     private ?HFSQLPlatform $platform = null;
+    private ?ExceptionConverterInterface $exceptionConverter = null;
 
     /**
      * @inheritDoc
@@ -35,7 +38,7 @@ class Driver implements DriverInterface
     /**
      * @inheritDoc
      *
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function getSchemaManager(\Doctrine\DBAL\Connection $conn, AbstractPlatform $platform): AbstractSchemaManager
     {
@@ -45,9 +48,11 @@ class Driver implements DriverInterface
     /**
      * @inheritDoc
      */
-    public function getExceptionConverter(): ExceptionConverter
+    public function getExceptionConverter(): ExceptionConverterInterface
     {
-        // TODO: Implement getExceptionConverter() method.
-        throw new \Exception();
+        if (!$this->exceptionConverter) {
+            $this->exceptionConverter = new DriverInterface\API\SQLSrv\ExceptionConverter();
+        }
+        return $this->exceptionConverter;
     }
 }

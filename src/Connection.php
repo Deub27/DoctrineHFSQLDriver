@@ -2,28 +2,28 @@
 
 namespace TBCD\Doctrine\HFSQLDriver;
 
-use Com;
 use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
 use Doctrine\DBAL\Driver\Result as ResultInterface;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\ParameterType;
 use Symfony\Polyfill\Intl\Icu\Exception\MethodNotImplementedException;
 use TBCD\Doctrine\HFSQLDriver\Exception\TransactionException;
+use com;
 
 class Connection implements ConnectionInterface
 {
 
     /**
-     * @var \Com
+     * @var com
      */
-    private Com $connection;
+    private com $connection;
 
     /**
      * @param string $dsn
      */
     public function __construct(string $dsn)
     {
-        $this->connection = new Com("ADODB.Connection");
+        $this->connection = new com("ADODB.Connection");
         $this->connection->ConnectionString = $dsn;
     }
 

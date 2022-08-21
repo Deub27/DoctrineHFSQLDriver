@@ -10,13 +10,12 @@
     "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "version": "1.0.0-alpha3",
+    "version": "1.0.0-alpha4",
     "require": {
         "php": ">=8.0.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/dbal": "^3.0",
-        "symfony/polyfill-intl-icu": "^1.26"
+        "doctrine/dbal": "^3.0"
     },
     "autoload": {
         "psr-4": {

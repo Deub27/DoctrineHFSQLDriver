@@ -2,16 +2,16 @@
 
 namespace TBCD\Doctrine\HFSQLDriver;
 
-use Variant;
+use variant;
 
 class RecordSetConverter
 {
 
     /**
-     * @param \Variant $recordSet
+     * @param variant $recordSet
      * @return array
      */
-    public static function convert(Variant $recordSet): array
+    public static function convert(variant $recordSet): array
     {
         $results = [];
 
