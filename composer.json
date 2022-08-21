@@ -10,7 +10,7 @@
     "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "version": "1.0.0-alpha4",
+    "version": "1.0.0-alpha2",
     "require": {
         "php": ">=8.0.2",
         "ext-ctype": "*",
@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "TBCD\\Doctrine\\HFSQLDriver": "src/"
+            "TBCD\\Doctrine\\HFSQLDriver\\": "src/"
         }
     }
 }
