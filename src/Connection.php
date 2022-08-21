@@ -4,36 +4,35 @@ namespace TBCD\Doctrine\HFSQLDriver;
 
 use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
 use Doctrine\DBAL\Driver\Result as ResultInterface;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Driver\Statement as StatementInterface;
 use Doctrine\DBAL\ParameterType;
-use Symfony\Polyfill\Intl\Icu\Exception\MethodNotImplementedException;
-use TBCD\Doctrine\HFSQLDriver\Exception\TransactionException;
-use com;
+use TBCD\Doctrine\HFSQLDriver\Exception\Exception;
 
 class Connection implements ConnectionInterface
 {
 
     /**
-     * @var com
+     * @var mixed
      */
-    private com $connection;
+    private mixed $connection;
 
     /**
      * @param string $dsn
+     * @param string $user
+     * @param string $password
      */
-    public function __construct(string $dsn)
+    public function __construct(string $dsn, string $user, string $password)
     {
-        $this->connection = new com("ADODB.Connection");
-        $this->connection->ConnectionString = $dsn;
+        $this->connection = odbc_connect($dsn, $user, $password);
     }
 
 
     /**
      * @inheritDoc
      */
-    public function prepare(string $sql): Statement
+    public function prepare(string $sql): StatementInterface
     {
-        throw new MethodNotImplementedException('prepare');
+        return new Statement(odbc_prepare($this->connection, $sql));
     }
 
     /**
@@ -41,18 +40,17 @@ class Connection implements ConnectionInterface
      */
     public function query(string $sql): ResultInterface
     {
-        $this->connection->open($this->connection);
-        $recordSet = $this->connection->execute($sql);
-        $data = RecordSetConverter::convert($recordSet);
-        $recordSet->close();
-        $this->connection->close();
-        return new Result($data);
+        $result = odbc_exec($this->connection, $sql);
+        if (!$result) {
+            throw new Exception(odbc_error($this->connection));
+        }
+        return new Result($result);
     }
 
     /**
      * @inheritDoc
      */
-    public function quote($value, $type = ParameterType::STRING)
+    public function quote($value, $type = ParameterType::STRING): string
     {
         return "'" . str_replace("'", "\'", $value) . "'";
     }
@@ -62,11 +60,11 @@ class Connection implements ConnectionInterface
      */
     public function exec(string $sql): int
     {
-        $this->connection->open();
-        $recordSet = $this->connection->execute($sql);
-        $data = RecordSetConverter::convert($recordSet);
-        $this->connection->close();
-        return $data['count'] ?? 0; // TODO: Extract the exact number from the recordSet
+        $result = odbc_exec($this->connection, $sql);
+        if (!$result) {
+            throw new Exception(odbc_error($this->connection));
+        }
+        return odbc_num_rows($result);
     }
 
     /**
@@ -74,8 +72,12 @@ class Connection implements ConnectionInterface
      */
     public function lastInsertId($name = null): bool|int|string
     {
-        //TODO: Implements method
-        throw new MethodNotImplementedException('lastInsertId');
+        $sql = "SELECT LAST_INSERT_ID() as last_insert_id FROM $name LIMIT 1";
+        $result = odbc_exec($this->connection, $sql);
+        if (!$result) {
+            throw new Exception(odbc_error($this->connection));
+        }
+        return odbc_fetch_array($result, 0)['last_insert_id'];
     }
 
     /**
@@ -83,7 +85,7 @@ class Connection implements ConnectionInterface
      */
     public function beginTransaction(): bool
     {
-        throw new TransactionException(__METHOD__);
+        return odbc_autocommit($this->connection);
     }
 
     /**
@@ -91,7 +93,7 @@ class Connection implements ConnectionInterface
      */
     public function commit(): bool
     {
-        throw new TransactionException(__METHOD__);
+        return odbc_commit($this->connection);
     }
 
     /**
@@ -99,6 +101,6 @@ class Connection implements ConnectionInterface
      */
     public function rollBack(): bool
     {
-        throw new TransactionException(__METHOD__);
+        return odbc_rollback($this->connection);
     }
 }

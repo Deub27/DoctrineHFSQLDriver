@@ -20,8 +20,8 @@ class Driver implements DriverInterface
      */
     public function connect(array $params): Connection
     {
-        $dsn = sprintf('Provider=PCSOFT.HFSQL;Data Source=%s:%s;User ID=%s;Password=%s;Initial Catalog=%s', $params['host'], $params['port'], $params['user'], $params['password'], $params['dbname']);
-        return new Connection($dsn);
+        $dsn = sprintf('DRIVER={HFSQL};Server Name=%s;Server Port=%s;Database=%s;UID=%s;PWD=%s', $params['host'], $params['port'], $params['dbname'], $params['user'], $params['password']);
+        return new Connection($dsn, $params['user'], $params['password']);
     }
 
     /**
@@ -51,6 +51,7 @@ class Driver implements DriverInterface
     public function getExceptionConverter(): ExceptionConverterInterface
     {
         if (!$this->exceptionConverter) {
+            //TODO: Create ExceptionConverter
             $this->exceptionConverter = new DriverInterface\API\SQLSrv\ExceptionConverter();
         }
         return $this->exceptionConverter;

@@ -10,11 +10,12 @@
     "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "version": "1.0.0-alpha2",
+    "version": "1.0.0-alpha3",
     "require": {
         "php": ">=8.0.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-odbc": "*",
         "doctrine/dbal": "^3.0"
     },
     "autoload": {

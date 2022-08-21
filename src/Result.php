@@ -8,21 +8,16 @@ class Result implements ResultInterface
 {
 
     /**
-     * @var array
+     * @var mixed
      */
-    private array $data;
+    private mixed $result;
 
     /**
-     * @var int|null
+     * @param mixed $result
      */
-    private ?int $currentRow = null;
-
-    /**
-     * @param array $data
-     */
-    public function __construct(array $data)
+    public function __construct(mixed $result)
     {
-        $this->data = $data;
+        $this->result = $result;
     }
 
 
@@ -31,9 +26,8 @@ class Result implements ResultInterface
      */
     public function fetchNumeric(): array
     {
-        $result = array_values($this->data[$this->currentRow]);
-        $this->currentRow++;
-        return $result;
+        odbc_fetch_row($this->result);
+        return odbc_fetch_array($this->result);
     }
 
     /**
@@ -41,9 +35,8 @@ class Result implements ResultInterface
      */
     public function fetchAssociative(): array
     {
-        $result = $this->data[$this->currentRow];
-        $this->currentRow++;
-        return $result;
+        odbc_fetch_row($this->result);
+        return array_values(odbc_fetch_array($this->result));
     }
 
     /**
@@ -51,7 +44,8 @@ class Result implements ResultInterface
      */
     public function fetchOne(): array
     {
-        return $this->data[0];
+        odbc_fetch_row($this->result, 0);
+        return odbc_fetch_array($this->result);
     }
 
     /**
@@ -59,7 +53,11 @@ class Result implements ResultInterface
      */
     public function fetchAllNumeric(): array
     {
-        return array_values($this->data);
+        $data = [];
+        while (odbc_fetch_row($this->result)) {
+            $data[] = array_values(odbc_fetch_array($this->result));
+        }
+        return $data;
     }
 
     /**
@@ -67,7 +65,11 @@ class Result implements ResultInterface
      */
     public function fetchAllAssociative(): array
     {
-        return $this->data;
+        $data = [];
+        while (odbc_fetch_row($this->result)) {
+            $data[] = odbc_fetch_array($this->result);
+        }
+        return $data;
     }
 
     /**
@@ -75,9 +77,11 @@ class Result implements ResultInterface
      */
     public function fetchFirstColumn(): array
     {
-        return array_map(function (array $row) {
-            return array_values($row)[0];
-        }, $this->data);
+        $data = [];
+        while (odbc_fetch_row($this->result)) {
+            $data[] = odbc_fetch_array($this->result);
+        }
+        return $data;
     }
 
     /**
@@ -85,7 +89,7 @@ class Result implements ResultInterface
      */
     public function rowCount(): int
     {
-        return count($this->data);
+        return odbc_num_rows($this->result);
     }
 
     /**
@@ -93,7 +97,7 @@ class Result implements ResultInterface
      */
     public function columnCount(): int
     {
-        return count(array_keys($this->data[0]));
+        return odbc_num_fields($this->result);
     }
 
     /**
@@ -101,6 +105,6 @@ class Result implements ResultInterface
      */
     public function free(): void
     {
-        $this->currentRow = 0;
+        odbc_free_result($this->result);
     }
 }
