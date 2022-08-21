@@ -2,27 +2,28 @@
 
 namespace TBCD\Doctrine\HfsqlDriver;
 
-use COM;
+use Com;
 use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
 use Doctrine\DBAL\Driver\Result as ResultInterface;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\ParameterType;
 use Symfony\Polyfill\Intl\Icu\Exception\MethodNotImplementedException;
+use TBCD\Doctrine\HfsqlDriver\Exception\TransactionException;
 
 class Connection implements ConnectionInterface
 {
 
     /**
-     * @var \COM
+     * @var \Com
      */
-    private COM $connection;
+    private Com $connection;
 
     /**
      * @param string $dsn
      */
     public function __construct(string $dsn)
     {
-        $this->connection = new COM("ADODB.Connection");
+        $this->connection = new Com("ADODB.Connection");
         $this->connection->ConnectionString = $dsn;
     }
 
@@ -40,48 +41,12 @@ class Connection implements ConnectionInterface
      */
     public function query(string $sql): ResultInterface
     {
-        try {
-            $results = [];
-            $this->connection->open();
-            $recordSet = new COM("ADODB.Recordset");
-            $recordSet->open($sql, $this->connection);
-
-            while (!$recordSet->EOF) {
-
-                $row = [];
-
-                for ($x = 0; $x < $recordSet->Fields->Count; $x++) {
-
-                    $value = $recordSet->Fields[$x]->value;
-                    $field = $recordSet->Fields[$x]->name;
-
-                    if ($recordSet->Fields[$x]->type == 133) {
-                        $date = (string)$recordSet->Fields[$x]->value;
-                        switch ($date) {
-                            case '':
-                            case '30/11/1999':
-                                $date = null;
-                                break;
-                            default:
-                                $exploded = explode('/', $date);
-                                $rev = array_reverse($exploded);
-                                $date = implode('-', $rev);
-                        }
-                        $value = $date;
-                    }
-
-                    $row[$field] = $value;
-                }
-                $results[] = $row;
-                $recordSet->MoveNext();
-            }
-
-            $recordSet->close();
-
-            return new Result($results);
-        } catch (\com_exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+        $this->connection->open($this->connection);
+        $recordSet = $this->connection->execute($sql);
+        $data = RecordSetConverter::convert($recordSet);
+        $recordSet->close();
+        $this->connection->close();
+        return new Result($data);
     }
 
     /**
@@ -89,7 +54,7 @@ class Connection implements ConnectionInterface
      */
     public function quote($value, $type = ParameterType::STRING)
     {
-        throw new MethodNotImplementedException('quote');
+        return "'" . str_replace("'", "\'", $value) . "'";
     }
 
     /**
@@ -97,7 +62,11 @@ class Connection implements ConnectionInterface
      */
     public function exec(string $sql): int
     {
-        throw new MethodNotImplementedException('exec');
+        $this->connection->open();
+        $recordSet = $this->connection->execute($sql);
+        $data = RecordSetConverter::convert($recordSet);
+        $this->connection->close();
+        return $data['count'] ?? 0; // TODO: Extract the exact number from the recordSet
     }
 
     /**
@@ -105,6 +74,7 @@ class Connection implements ConnectionInterface
      */
     public function lastInsertId($name = null): bool|int|string
     {
+        //TODO: Implements method
         throw new MethodNotImplementedException('lastInsertId');
     }
 
@@ -113,7 +83,7 @@ class Connection implements ConnectionInterface
      */
     public function beginTransaction(): bool
     {
-        throw new MethodNotImplementedException('beginTransaction');
+        throw new TransactionException(__METHOD__);
     }
 
     /**
@@ -121,7 +91,7 @@ class Connection implements ConnectionInterface
      */
     public function commit(): bool
     {
-        throw new MethodNotImplementedException('commit');
+        throw new TransactionException(__METHOD__);
     }
 
     /**
@@ -129,6 +99,6 @@ class Connection implements ConnectionInterface
      */
     public function rollBack(): bool
     {
-        throw new MethodNotImplementedException('rollBack');
+        throw new TransactionException(__METHOD__);
     }
 }

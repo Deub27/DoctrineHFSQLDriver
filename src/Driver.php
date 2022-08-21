@@ -39,6 +39,7 @@ class Driver implements DriverInterface
      */
     public function getExceptionConverter(): ExceptionConverter
     {
+        // TODO: Implement getExceptionConverter() method.
         throw new \Exception();
     }
 }
