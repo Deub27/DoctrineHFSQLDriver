@@ -1,7 +1,7 @@
 {
     "name": "tbcd/doctrine-hfsql-driver",
     "type": "library",
-    "description": "Doctrine HFSQL Driver",
+    "description": "Doctrine HFSQL Driver with ODBC",
     "authors": [
         {
             "name": "Thomas Beauchataud"
@@ -10,7 +10,7 @@
     "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "version": "1.0.0-alpha3",
+    "version": "1.0.0-beta1",
     "require": {
         "php": ">=8.0.2",
         "ext-ctype": "*",

@@ -6,7 +6,7 @@ use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
 use Doctrine\DBAL\Driver\Result as ResultInterface;
 use Doctrine\DBAL\Driver\Statement as StatementInterface;
 use Doctrine\DBAL\ParameterType;
-use TBCD\Doctrine\HFSQLDriver\Exception\Exception;
+use TBCD\Doctrine\HFSQLDriver\Exception\DriverException;
 
 class Connection implements ConnectionInterface
 {
@@ -42,7 +42,7 @@ class Connection implements ConnectionInterface
     {
         $result = odbc_exec($this->connection, $sql);
         if (!$result) {
-            throw new Exception(odbc_error($this->connection));
+            throw new DriverException(odbc_errormsg($this->connection), odbc_error($this->connection));
         }
         return new Result($result);
     }
@@ -62,7 +62,7 @@ class Connection implements ConnectionInterface
     {
         $result = odbc_exec($this->connection, $sql);
         if (!$result) {
-            throw new Exception(odbc_error($this->connection));
+            throw new DriverException(odbc_errormsg($this->connection), odbc_error($this->connection));
         }
         return odbc_num_rows($result);
     }
@@ -75,7 +75,7 @@ class Connection implements ConnectionInterface
         $sql = "SELECT LAST_INSERT_ID() as last_insert_id FROM $name LIMIT 1";
         $result = odbc_exec($this->connection, $sql);
         if (!$result) {
-            throw new Exception(odbc_error($this->connection));
+            throw new DriverException(odbc_errormsg($this->connection), odbc_error($this->connection));
         }
         return odbc_fetch_array($result, 0)['last_insert_id'];
     }

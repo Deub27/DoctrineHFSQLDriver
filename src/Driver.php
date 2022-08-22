@@ -7,12 +7,20 @@ use Doctrine\DBAL\Driver\API\ExceptionConverter as ExceptionConverterInterface;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use TBCD\Doctrine\HFSQLDriver\Exception\ExceptionConverter;
 use TBCD\Doctrine\HFSQLDriver\Platform\HFSQLPlatform;
 
 class Driver implements DriverInterface
 {
 
+    /**
+     * @var HFSQLPlatform|null
+     */
     private ?HFSQLPlatform $platform = null;
+
+    /**
+     * @var ExceptionConverter|null
+     */
     private ?ExceptionConverterInterface $exceptionConverter = null;
 
     /**
@@ -51,8 +59,7 @@ class Driver implements DriverInterface
     public function getExceptionConverter(): ExceptionConverterInterface
     {
         if (!$this->exceptionConverter) {
-            //TODO: Create ExceptionConverter
-            $this->exceptionConverter = new DriverInterface\API\SQLSrv\ExceptionConverter();
+            $this->exceptionConverter = new ExceptionConverter();
         }
         return $this->exceptionConverter;
     }
