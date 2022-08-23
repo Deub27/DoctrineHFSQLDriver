@@ -33,10 +33,9 @@ class Result implements ResultInterface
     /**
      * @inheritDoc
      */
-    public function fetchAssociative(): array
+    public function fetchAssociative(): array|false
     {
-        odbc_fetch_row($this->result);
-        return array_values(odbc_fetch_array($this->result));
+        return odbc_fetch_array($this->result);
     }
 
     /**
@@ -66,8 +65,8 @@ class Result implements ResultInterface
     public function fetchAllAssociative(): array
     {
         $data = [];
-        while (odbc_fetch_row($this->result)) {
-            $data[] = odbc_fetch_array($this->result);
+        while ($row = odbc_fetch_array($this->result)) {
+            $data[] = $row;
         }
         return $data;
     }
