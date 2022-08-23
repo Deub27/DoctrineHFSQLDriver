@@ -110,6 +110,6 @@ class HFSQLPlatform extends AbstractPlatform
      */
     public function getCurrentDatabaseExpression(): string
     {
-        throw new Exception('HFSQL doesnt have expression to get the current database');
+        throw new Exception('HFSQL doesnt have any expression to get the current database');
     }
 }

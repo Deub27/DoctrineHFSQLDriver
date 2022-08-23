@@ -26,14 +26,17 @@ class Result implements ResultInterface
      */
     public function fetchNumeric(): array|false
     {
-        $fieldNames = [];
+        $fields = [];
         for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
-            $fieldNames[] = odbc_field_name($this->result, $field);
+            $fields[] = ['name' => odbc_field_name($this->result, $field), 'type' => odbc_field_type($this->result, $field)];
         }
 
         $row = [];
-        foreach ($fieldNames as $field => $fieldName) {
-            $row[$field] = odbc_result($this->result, $fieldName);
+        foreach ($fields as $fieldId => $fieldData) {
+            $fieldName = $fieldData['name'];
+            $fieldType = $fieldData['type'];
+            $fieldValue = odbc_result($this->result, $fieldName);
+            $row[$fieldId] = $this->convertType($fieldValue, $fieldType);
         }
 
         return $row;
@@ -45,7 +48,20 @@ class Result implements ResultInterface
      */
     public function fetchAssociative(): array|false
     {
-        return odbc_fetch_array($this->result);
+        $fields = [];
+        for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
+            $fields[] = ['name' => odbc_field_name($this->result, $field), 'type' => odbc_field_type($this->result, $field)];
+        }
+
+        $row = [];
+        foreach ($fields as $fieldData) {
+            $fieldName = $fieldData['name'];
+            $fieldType = $fieldData['type'];
+            $fieldValue = odbc_result($this->result, $fieldName);
+            $row[$fieldName] = $this->convertType($fieldValue, $fieldType);
+        }
+
+        return $row;
     }
 
     /**
@@ -62,16 +78,19 @@ class Result implements ResultInterface
      */
     public function fetchAllNumeric(): array
     {
-        $fieldNames = [];
+        $fields = [];
         for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
-            $fieldNames[] = odbc_field_name($this->result, $field);
+            $fields[] = ['name' => odbc_field_name($this->result, $field), 'type' => odbc_field_type($this->result, $field)];
         }
 
         $data = [];
         while (odbc_fetch_row($this->result)) {
             $row = [];
-            foreach ($fieldNames as $field => $fieldName) {
-                $row[$field] = odbc_result($this->result, $fieldName);
+            foreach ($fields as $fieldId => $fieldData) {
+                $fieldName = $fieldData['name'];
+                $fieldType = $fieldData['type'];
+                $fieldValue = odbc_result($this->result, $fieldName);
+                $row[$fieldId] = $this->convertType($fieldValue, $fieldType);
             }
             $data[] = $row;
         }
@@ -84,10 +103,23 @@ class Result implements ResultInterface
      */
     public function fetchAllAssociative(): array
     {
+        $fields = [];
+        for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
+            $fields[] = ['name' => odbc_field_name($this->result, $field), 'type' => odbc_field_type($this->result, $field)];
+        }
+
         $data = [];
-        while ($row = odbc_fetch_array($this->result)) {
+        while (odbc_fetch_row($this->result)) {
+            $row = [];
+            foreach ($fields as $fieldData) {
+                $fieldName = $fieldData['name'];
+                $fieldType = $fieldData['type'];
+                $fieldValue = odbc_result($this->result, $fieldName);
+                $row[$fieldName] = $this->convertType($fieldValue, $fieldType);
+            }
             $data[] = $row;
         }
+
         return $data;
     }
 
@@ -97,10 +129,11 @@ class Result implements ResultInterface
     public function fetchFirstColumn(): array
     {
         $fieldName = odbc_field_name($this->result, 1);
+        $fieldType = odbc_field_type($this->result, 1);
 
         $data = [];
         while (odbc_fetch_row($this->result)) {
-            $data[] = odbc_result($this->result, $fieldName);
+            $data[] = $this->convertType(odbc_result($this->result, $fieldName), $fieldType);
         }
 
         return $data;
@@ -128,5 +161,18 @@ class Result implements ResultInterface
     public function free(): void
     {
         odbc_free_result($this->result);
+    }
+
+    /**
+     * @param string $value
+     * @param string $type
+     * @return int|string
+     */
+    private function convertType(string $value, string $type): int|string
+    {
+        return match ($type) {
+            'INTEGER', 'BIGINT', 'SMALLINT' => (int)$value,
+            default => $value
+        };
     }
 }
