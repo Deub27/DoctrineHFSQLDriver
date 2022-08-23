@@ -24,10 +24,20 @@ class Result implements ResultInterface
     /**
      * @inheritDoc
      */
-    public function fetchNumeric(): array
+    public function fetchNumeric(): array|false
     {
-        odbc_fetch_row($this->result);
-        return odbc_fetch_array($this->result);
+        $fieldNames = [];
+        for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
+            $fieldNames[] = odbc_field_name($this->result, $field);
+        }
+
+        $row = [];
+        foreach ($fieldNames as $field => $fieldName) {
+            $row[$field] = odbc_result($this->result, $fieldName);
+        }
+
+        return $row;
+
     }
 
     /**
@@ -41,10 +51,10 @@ class Result implements ResultInterface
     /**
      * @inheritDoc
      */
-    public function fetchOne(): array
+    public function fetchOne(): array|false
     {
-        odbc_fetch_row($this->result, 0);
-        return odbc_fetch_array($this->result);
+        $data = $this->fetchNumeric();
+        return $data ? $this->fetchNumeric()[0] : $data;
     }
 
     /**
@@ -52,10 +62,20 @@ class Result implements ResultInterface
      */
     public function fetchAllNumeric(): array
     {
+        $fieldNames = [];
+        for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
+            $fieldNames[] = odbc_field_name($this->result, $field);
+        }
+
         $data = [];
         while (odbc_fetch_row($this->result)) {
-            $data[] = array_values(odbc_fetch_array($this->result));
+            $row = [];
+            foreach ($fieldNames as $field => $fieldName) {
+                $row[$field] = odbc_result($this->result, $fieldName);
+            }
+            $data[] = $row;
         }
+
         return $data;
     }
 
@@ -76,10 +96,13 @@ class Result implements ResultInterface
      */
     public function fetchFirstColumn(): array
     {
+        $fieldName = odbc_field_name($this->result, 1);
+
         $data = [];
         while (odbc_fetch_row($this->result)) {
-            $data[] = odbc_fetch_array($this->result);
+            $data[] = odbc_result($this->result, $fieldName);
         }
+
         return $data;
     }
 
