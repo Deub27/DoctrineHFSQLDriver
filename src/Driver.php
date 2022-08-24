@@ -40,6 +40,7 @@ class Driver implements DriverInterface
         if (!$this->platform) {
             $this->platform = new HFSQLPlatform();
         }
+
         return $this->platform;
     }
 
@@ -61,6 +62,7 @@ class Driver implements DriverInterface
         if (!$this->exceptionConverter) {
             $this->exceptionConverter = new ExceptionConverter();
         }
+
         return $this->exceptionConverter;
     }
 }

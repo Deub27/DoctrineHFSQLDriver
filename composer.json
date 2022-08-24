@@ -10,7 +10,7 @@
     "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "version": "1.0.0-beta2",
+    "version": "1.0.0",
     "require": {
         "php": ">=8.0.2",
         "ext-ctype": "*",

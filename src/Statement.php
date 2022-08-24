@@ -5,7 +5,7 @@ namespace TBCD\Doctrine\HFSQLDriver;
 use Doctrine\DBAL\Driver\Result as ResultInterface;
 use Doctrine\DBAL\Driver\Statement as StatementInterface;
 use Doctrine\DBAL\ParameterType;
-use TBCD\Doctrine\HFSQLDriver\Exception\DriverException;
+use TBCD\Doctrine\HFSQLDriver\Exception\Exception;
 
 class Statement implements StatementInterface
 {
@@ -57,8 +57,9 @@ class Statement implements StatementInterface
 
         $result = odbc_execute($this->statement, $this->bindValues);
         if (!$result) {
-            throw new DriverException(odbc_errormsg($this->statement), odbc_error($this->statement));
+            throw new Exception(odbc_errormsg($this->statement), odbc_error($this->statement));
         }
+
         return new Result($result);
     }
 }

@@ -4,7 +4,7 @@ namespace TBCD\Doctrine\HFSQLDriver\Exception;
 
 use Doctrine\DBAL\Driver\Exception as DriverExceptionInterface;
 
-class DriverException extends \Exception implements DriverExceptionInterface
+class Exception extends \Exception implements DriverExceptionInterface
 {
 
     /**
