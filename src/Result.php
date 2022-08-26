@@ -168,7 +168,7 @@ class Result implements ResultInterface
      * @param string $type
      * @return int|string
      */
-    private function convertType(string $value, string $type): int|string
+    private function convertType(mixed $value, string $type): mixed
     {
         return match ($type) {
             'INTEGER', 'BIGINT', 'SMALLINT' => (int)$value,
