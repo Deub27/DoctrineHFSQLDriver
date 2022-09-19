@@ -12,20 +12,32 @@
 namespace TBCD\Doctrine\HFSQLDriver;
 
 use Doctrine\DBAL\Driver\Result as ResultInterface;
+use TypeError;
 
 final class Result implements ResultInterface
 {
 
     /**
-     * @var mixed
+     * @var resource
      */
     private mixed $result;
 
     /**
-     * @param mixed $result
+     * @var array|null
+     */
+    private ?array $fields = null;
+
+    /**
+     * @param resource $result
+     *
+     * @internal The result can be only instantiated by its driver connection or statement.
      */
     public function __construct(mixed $result)
     {
+        if (!is_resource($result)) {
+            throw new TypeError(sprintf('The result passed to %s must of type resource', self::class));
+        }
+
         $this->result = $result;
     }
 
@@ -35,13 +47,16 @@ final class Result implements ResultInterface
      */
     public function fetchNumeric(): array|false
     {
-        $fields = [];
-        for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
-            $fields[] = ['name' => odbc_field_name($this->result, $field), 'type' => odbc_field_type($this->result, $field)];
+        if (null === $this->result) {
+            return false;
+        }
+
+        if (!odbc_fetch_row($this->result)) {
+            return false;
         }
 
         $row = [];
-        foreach ($fields as $fieldId => $fieldData) {
+        foreach ($this->getFields() as $fieldId => $fieldData) {
             $fieldName = $fieldData['name'];
             $fieldType = $fieldData['type'];
             $fieldValue = odbc_result($this->result, $fieldName);
@@ -57,13 +72,16 @@ final class Result implements ResultInterface
      */
     public function fetchAssociative(): array|false
     {
-        $fields = [];
-        for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
-            $fields[] = ['name' => odbc_field_name($this->result, $field), 'type' => odbc_field_type($this->result, $field)];
+        if (null === $this->result) {
+            return false;
+        }
+
+        if (!odbc_fetch_row($this->result)) {
+            return false;
         }
 
         $row = [];
-        foreach ($fields as $fieldData) {
+        foreach ($this->getFields() as $fieldData) {
             $fieldName = $fieldData['name'];
             $fieldType = $fieldData['type'];
             $fieldValue = odbc_result($this->result, $fieldName);
@@ -78,8 +96,25 @@ final class Result implements ResultInterface
      */
     public function fetchOne(): mixed
     {
-        $data = $this->fetchNumeric();
-        return $data ? $this->fetchNumeric()[0] : $data;
+        if (null === $this->result) {
+            return false;
+        }
+
+        if (!odbc_fetch_row($this->result)) {
+            return false;
+        }
+
+        $fields = $this->getFields();
+
+        if (empty($fields)) {
+            return false;
+        }
+
+        $fieldData = $fields[0];
+        $fieldName = $fieldData['name'];
+        $fieldType = $fieldData['type'];
+        $fieldValue = odbc_result($this->result, $fieldName);
+        return $this->convertType($fieldValue, $fieldType);
     }
 
     /**
@@ -87,15 +122,14 @@ final class Result implements ResultInterface
      */
     public function fetchAllNumeric(): array
     {
-        $fields = [];
-        for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
-            $fields[] = ['name' => odbc_field_name($this->result, $field), 'type' => odbc_field_type($this->result, $field)];
+        if (null === $this->result) {
+            return [];
         }
 
         $data = [];
         while (odbc_fetch_row($this->result)) {
             $row = [];
-            foreach ($fields as $fieldId => $fieldData) {
+            foreach ($this->getFields() as $fieldId => $fieldData) {
                 $fieldName = $fieldData['name'];
                 $fieldType = $fieldData['type'];
                 $fieldValue = odbc_result($this->result, $fieldName);
@@ -112,15 +146,14 @@ final class Result implements ResultInterface
      */
     public function fetchAllAssociative(): array
     {
-        $fields = [];
-        for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
-            $fields[] = ['name' => odbc_field_name($this->result, $field), 'type' => odbc_field_type($this->result, $field)];
+        if (null === $this->result) {
+            return [];
         }
 
         $data = [];
         while (odbc_fetch_row($this->result)) {
             $row = [];
-            foreach ($fields as $fieldData) {
+            foreach ($this->getFields() as $fieldData) {
                 $fieldName = $fieldData['name'];
                 $fieldType = $fieldData['type'];
                 $fieldValue = odbc_result($this->result, $fieldName);
@@ -137,6 +170,10 @@ final class Result implements ResultInterface
      */
     public function fetchFirstColumn(): array
     {
+        if (null === $this->result) {
+            return [];
+        }
+
         $fieldName = odbc_field_name($this->result, 1);
         $fieldType = odbc_field_type($this->result, 1);
 
@@ -153,6 +190,10 @@ final class Result implements ResultInterface
      */
     public function rowCount(): int
     {
+        if (null === $this->result) {
+            return 0;
+        }
+
         return odbc_num_rows($this->result);
     }
 
@@ -161,6 +202,10 @@ final class Result implements ResultInterface
      */
     public function columnCount(): int
     {
+        if (null === $this->result) {
+            return 0;
+        }
+
         return odbc_num_fields($this->result);
     }
 
@@ -170,6 +215,7 @@ final class Result implements ResultInterface
     public function free(): void
     {
         odbc_free_result($this->result);
+        $this->result = null;
     }
 
     /**
@@ -183,5 +229,20 @@ final class Result implements ResultInterface
             'INTEGER', 'BIGINT', 'SMALLINT' => (int)$value,
             default => $value
         };
+    }
+
+    /**
+     * @return array
+     */
+    private function getFields(): array
+    {
+        if (null === $this->fields) {
+            $this->fields = [];
+            for ($field = 1; $field <= odbc_num_fields($this->result); $field++) {
+                $this->fields[] = ['name' => odbc_field_name($this->result, $field), 'type' => odbc_field_type($this->result, $field)];
+            }
+        }
+
+        return $this->fields;
     }
 }
