@@ -13,7 +13,7 @@ namespace TBCD\Doctrine\HFSQLDriver;
 
 use Doctrine\DBAL\Driver\Result as ResultInterface;
 
-class Result implements ResultInterface
+final class Result implements ResultInterface
 {
 
     /**
@@ -76,7 +76,7 @@ class Result implements ResultInterface
     /**
      * @inheritDoc
      */
-    public function fetchOne(): array|false
+    public function fetchOne(): mixed
     {
         $data = $this->fetchNumeric();
         return $data ? $this->fetchNumeric()[0] : $data;

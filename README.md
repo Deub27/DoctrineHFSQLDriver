@@ -1,6 +1,6 @@
 # Doctrine HFSQL Driver
 
-## Installtion
+## Installation
 
 ### 1.  Install the doctrine driver
 

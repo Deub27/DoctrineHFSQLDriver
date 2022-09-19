@@ -13,6 +13,7 @@ namespace TBCD\Doctrine\HFSQLDriver;
 
 use Doctrine\DBAL\Driver as DriverInterface;
 use Doctrine\DBAL\Driver\API\ExceptionConverter as ExceptionConverterInterface;
+use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
@@ -35,7 +36,7 @@ class Driver implements DriverInterface
     /**
      * @inheritDoc
      */
-    public function connect(array $params): Connection
+    public function connect(array $params): ConnectionInterface
     {
         $dsn = sprintf('DRIVER={HFSQL};Server Name=%s;Server Port=%s;Database=%s;UID=%s;PWD=%s', $params['host'], $params['port'], $params['dbname'], $params['user'], $params['password']);
         return new Connection($dsn, $params['user'], $params['password']);

@@ -16,7 +16,7 @@ use Doctrine\DBAL\Driver\Statement as StatementInterface;
 use Doctrine\DBAL\ParameterType;
 use TBCD\Doctrine\HFSQLDriver\Exception\Exception;
 
-class Statement implements StatementInterface
+final class Statement implements StatementInterface
 {
 
     /**

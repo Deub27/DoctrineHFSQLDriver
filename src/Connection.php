@@ -17,7 +17,7 @@ use Doctrine\DBAL\Driver\Statement as StatementInterface;
 use Doctrine\DBAL\ParameterType;
 use TBCD\Doctrine\HFSQLDriver\Exception\Exception;
 
-class Connection implements ConnectionInterface
+final class Connection implements ConnectionInterface
 {
 
     /**
