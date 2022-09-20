@@ -47,7 +47,7 @@ final class Connection implements ConnectionInterface
      */
     public function prepare(string $sql): StatementInterface
     {
-        return new Statement(odbc_prepare($this->connection, $sql));
+        return new Statement($this->connection, $sql);
     }
 
     /**

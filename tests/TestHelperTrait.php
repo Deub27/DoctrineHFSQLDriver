@@ -30,7 +30,7 @@ trait TestHelperTrait
         $finder = new Finder();
         $finder->files()->in(__DIR__ . '/..')->name('*.fic');
         foreach ($finder as $file) {
-            unlink($file->getRealPath());
+            @unlink($file->getRealPath());
         }
     }
 }
