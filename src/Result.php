@@ -227,6 +227,8 @@ final class Result implements ResultInterface
     {
         return match ($type) {
             'INTEGER', 'BIGINT', 'SMALLINT' => (int)$value,
+            'TIME' => substr($value, 0, 8),
+            'DATE' => substr_replace(substr_replace($value, '-', 4, 0), '-', 7, 0),
             default => $value
         };
     }
