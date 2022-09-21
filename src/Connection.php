@@ -90,12 +90,8 @@ final class Connection implements ConnectionInterface
     public function lastInsertId($name = null): bool|int|string
     {
         $sql = "SELECT LAST_INSERT_ID() as last_insert_id FROM $name LIMIT 1";
-        $result = odbc_exec($this->connection, $sql);
-        if (!$result) {
-            throw new Exception(odbc_errormsg($this->connection), odbc_error($this->connection));
-        }
-
-        return odbc_fetch_array($result, 0)['last_insert_id'];
+        $result = $this->query($sql);
+        return $result->fetchOne();
     }
 
     /**
@@ -103,7 +99,7 @@ final class Connection implements ConnectionInterface
      */
     public function beginTransaction(): bool
     {
-        return odbc_autocommit($this->connection);
+        return odbc_autocommit($this->connection, false);
     }
 
     /**
