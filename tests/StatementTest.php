@@ -138,6 +138,21 @@ class StatementTest extends TestCase
         $connection = $driver->connect(['host' => '127.0.0.1', 'user' => 'foo', 'password' => 'bar', 'port' => 4900, 'dbname' => 'DBHF_CF']);
         $tableName = $this->generateTableName();
         $connection->exec("CREATE TABLE $tableName (id INTEGER, code VARCHAR(255), name VARCHAR(255))");
+        $statement = $connection->prepare("INSERT INTO $tableName (id, code, name) VALUES (?, ':code', ':name')");
+        $this->expectException(Exception::class);
+        $statement->bindValue('0', 1);
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testUnexistingNamedParams(): void
+    {
+        $driver = new Driver();
+        $connection = $driver->connect(['host' => '127.0.0.1', 'user' => 'foo', 'password' => 'bar', 'port' => 4900, 'dbname' => 'DBHF_CF']);
+        $tableName = $this->generateTableName();
+        $connection->exec("CREATE TABLE $tableName (id INTEGER, code VARCHAR(255), name VARCHAR(255))");
         $statement = $connection->prepare("INSERT INTO $tableName (id, code, name) VALUES (:id, ':code', ':name')");
         $this->expectException(Exception::class);
         $statement->bindValue('test', 1);
