@@ -68,6 +68,14 @@ final class Connection implements ConnectionInterface
      */
     public function quote($value, $type = ParameterType::STRING): string
     {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_float($value)) {
+            return sprintf('%F', $value);
+        }
+
         return "'" . str_replace("'", "\'", $value) . "'";
     }
 
