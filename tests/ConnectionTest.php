@@ -31,14 +31,6 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @return void
-     */
-    public function testCreation(): void
-    {
-
-    }
-
-    /**
      * @throws Exception
      */
     public function testExec(): void

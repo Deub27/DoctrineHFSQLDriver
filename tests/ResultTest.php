@@ -238,4 +238,25 @@ class ResultTest extends TestCase
         $count = $result->rowCount();
         $this->assertEquals(2, $count);
     }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testTypeConversion(): void
+    {
+        $driver = new Driver();
+        $connection = $driver->connect(['host' => '127.0.0.1', 'user' => 'foo', 'password' => 'bar', 'port' => 4900, 'dbname' => 'DBHF_CF']);
+        $tableName = $this->generateTableName();
+        $connection->exec("CREATE TABLE $tableName (id INTEGER, date_f DATE, time_f TIME, bool_f BOOLEAN, bool_t BOOLEAN, text_f VARCHAR(255))");
+        $connection->exec("INSERT INTO $tableName (id, date_f, time_f, bool_f, bool_t, text_f) VALUES (1, '20220101', '081200', 0, 1, 'test')");
+        $result = $connection->query("SELECT * FROM $tableName");
+        $data = $result->fetchAssociative();
+        $this->assertEquals('2022-01-01', $data['date_f']);
+        $this->assertEquals('08:12:00', $data['time_f']);
+        $this->assertEquals(1, $data['id']);
+        $this->assertEquals('test', $data['text_f']);
+        $this->assertEquals(true, $data['bool_t']);
+        $this->assertEquals(false, $data['bool_f']);
+    }
 }
