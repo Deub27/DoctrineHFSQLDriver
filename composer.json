@@ -1,10 +1,13 @@
 {
-    "name": "tbcd/doctrine-hfsql-driver",
+    "name": "deub27/doctrine-hfsql-driver",
     "type": "library",
     "description": "Doctrine HFSQL Driver with ODBC",
     "authors": [
         {
-            "name": "Thomas Beauchataud"
+            "name": "Thomas Beauchataud",
+        },
+        {
+            "name": "Sébastien Deberdt",
         }
     ],
     "keywords": [
@@ -21,7 +24,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-odbc": "*",
-        "doctrine/dbal": "^3.0"
+        "doctrine/dbal": "^4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
