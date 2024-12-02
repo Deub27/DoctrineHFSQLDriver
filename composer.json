@@ -1,44 +1,44 @@
 {
-    "name": "deub27/doctrine-hfsql-driver",
-    "type": "library",
-    "description": "Doctrine HFSQL Driver with ODBC",
-    "authors": [
-        {
-            "name": "Thomas Beauchataud",
-        },
-        {
-            "name": "Sébastien Deberdt",
-        }
-    ],
-    "keywords": [
-        "HFSQL",
-        "Doctrine",
-        "ODBC"
-    ],
-    "license": "MIT",
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "version": "1.0.2",
-    "require": {
-        "php": ">=8.0.2",
-        "ext-ctype": "*",
-        "ext-iconv": "*",
-        "ext-odbc": "*",
-        "doctrine/dbal": "^4.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "doctrine/doctrine-bundle": "^2.2",
-        "symfony/finder": "^6.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "TBCD\\Doctrine\\HFSQLDriver\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "TBCD\\Doctrine\\HFSQLDriver\\Tests\\": "tests/"
-        }
-    }
+	"name": "deub27/doctrine-hfsql-driver",
+	"type": "library",
+	"description": "Doctrine HFSQL Driver with ODBC",
+	"authors": [
+		{
+			"name": "Thomas Beauchataud"
+		},
+		{
+			"name": "Sébastien Deberdt"
+		}
+	],
+	"keywords": [
+		"HFSQL",
+		"Doctrine",
+		"ODBC"
+	],
+	"license": "MIT",
+	"minimum-stability": "stable",
+	"prefer-stable": true,
+	"version": "1.0.2",
+	"require": {
+		"php": ">=8.0.2",
+		"ext-ctype": "*",
+		"ext-iconv": "*",
+		"ext-odbc": "*",
+		"doctrine/dbal": "^3.0"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.5",
+		"doctrine/doctrine-bundle": "^2.2",
+		"symfony/finder": "^6.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"TBCD\\Doctrine\\HFSQLDriver\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"TBCD\\Doctrine\\HFSQLDriver\\Tests\\": "tests/"
+		}
+	}
 }
